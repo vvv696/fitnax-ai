@@ -17,6 +17,11 @@ const router = createRouter({
       name: 'transactions',
       component: () => import('../views/TransactionsPage.vue'),
     },
+    {
+      path: '/assets/:mainAccountId',
+      name: 'assets',
+      component: () => import('../views/AssetsPage.vue'),
+    },
   ],
 })
 

@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="w-[240px] flex-shrink-0 bg-[#1c1c1e] flex flex-col">
+    <aside class="w-[240px] flex-shrink-0 bg-apple-bg flex flex-col border-r border-apple-separator/50">
       <!-- Logo -->
       <div class="px-6 py-5">
         <h1 class="text-xl font-semibold tracking-wide text-white">Fintax</h1>
@@ -60,7 +60,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 bg-[#2c2c2e] overflow-auto">
+    <main class="flex-1 bg-apple-bg-secondary overflow-auto">
       <slot />
     </main>
   </div>
@@ -72,6 +72,6 @@ import { useRoute, RouterLink } from 'vue-router'
 const route = useRoute()
 
 function isActive(path: string): boolean {
-  return route.path === path
+  return route.path === path || route.path.startsWith(path + '/')
 }
 </script>
