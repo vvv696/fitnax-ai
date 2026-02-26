@@ -7,11 +7,14 @@ import com.fintax.controller.req.MainAccountPageReq;
 import com.fintax.controller.req.MainAccountUpdateReq;
 import com.fintax.controller.resp.MainAccountResp;
 import com.fintax.entity.MainAccount;
+import com.fintax.controller.resp.ImportResultResp;
 import com.fintax.service.CryptoTxService;
+import com.fintax.service.ExcelImportService;
 import com.fintax.service.MainAccountService;
 import com.fintax.service.SubAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +34,7 @@ public class MainAccountController {
     private final MainAccountService mainAccountService;
     private final SubAccountService subAccountService;
     private final CryptoTxService cryptoTxService;
+    private final ExcelImportService excelImportService;
 
     /**
      * 创建主账户
@@ -112,6 +116,34 @@ public class MainAccountController {
             return Result.error(404, "主账户不存在");
         }
         return Result.success(MainAccountResp.fromEntity(account));
+    }
+
+    /**
+     * 导入 Excel 交易文件
+     *
+     * <p>上传 Excel 文件（.xlsx），自动创建 Sub Account 并解析交易明细写入 crypto_tx。
+     * 按 uk_tx_dedupe 唯一索引去重，重复行跳过不报错。</p>
+     *
+     * @param id   主账户 ID（路径参数）
+     * @param file 上传的 Excel 文件（multipart/form-data）
+     * @return 导入结果，包含成功条数、失败条数、失败行详情
+     */
+    @PostMapping("/{id}/import")
+    public Result<ImportResultResp> importFile(@PathVariable Long id,
+                                               @RequestParam("file") MultipartFile file) {
+        MainAccount existing = mainAccountService.getById(id);
+        if (existing == null) {
+            return Result.error(404, "主账户不存在");
+        }
+        if (file.isEmpty()) {
+            return Result.error(400, "上传文件不能为空");
+        }
+        String fileName = file.getOriginalFilename();
+        if (fileName == null || !fileName.toLowerCase().endsWith(".xlsx")) {
+            return Result.error(400, "仅支持 .xlsx 格式的 Excel 文件");
+        }
+        ImportResultResp result = excelImportService.importExcel(id, file);
+        return Result.success(result);
     }
 
     /**

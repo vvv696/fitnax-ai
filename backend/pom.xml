@@ -77,6 +77,13 @@
             <version>${fastjson2.version}</version>
         </dependency>
 
+        <!-- Apache POI for Excel parsing -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.5</version>
+        </dependency>
+
         <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
