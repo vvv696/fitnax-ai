@@ -1,0 +1,137 @@
+[
+  {
+    "category": "project_bootstrap",
+    "description": "初始化后端与前端工程骨架，并确保本地可启动",
+    "steps": [
+      "确认后端使用 Java 21 + Spring Boot 3 + MyBatis-Flex + PostgreSQL + Maven，创建基础工程结构",
+      "确认前端使用 Vue3 + TypeScript + Vite + Tailwind CSS，创建基础工程结构",
+      "实现左侧菜单布局：Accounts -> Account、Crypto",
+      "提供本地启动说明（README 或 init.sh），确保前后端能启动并访问基础页面路由"
+    ],
+    "passes": false
+  },
+  {
+    "category": "db_schema",
+    "description": "创建 PostgreSQL 数据库表结构（main_account / sub_account / crypto_tx / asset_reconcile_snapshot）",
+    "steps": [
+      "新增 DB migration 脚本，创建 main_account 表（含字段、默认值、软删、索引、唯一约束）",
+      "新增 DB migration 脚本，创建 sub_account 表（含字段、默认值、导入批次字段、索引、唯一约束）",
+      "新增 DB migration 脚本，创建 crypto_tx 表（含字段、默认值、去重唯一索引、常用查询索引）",
+      "新增 DB migration 脚本，创建 asset_reconcile_snapshot 表（含字段、默认值、唯一约束、查询索引）",
+      "启动应用并验证 migration 成功执行"
+    ],
+    "passes": false
+  },
+  {
+    "category": "backend_models",
+    "description": "后端领域模型与 MyBatis-Flex 基础 CRUD 支持",
+    "steps": [
+      "为 4 张表创建 Entity（Lombok），字段与数据库完全一致（含 is_deleted、created_at、updated_at 等）",
+      "为 4 张表创建 Mapper（MyBatis-Flex）",
+      "为 main_account、sub_account 提供基础 Service 层 CRUD 方法（带软删处理）",
+      "为 crypto_tx 提供基础查询方法（按条件分页、按 tx_hash 聚合查询、按 tx_hash 查明细）",
+      "为 asset_reconcile_snapshot 提供分页查询与导出查询方法"
+    ],
+    "passes": false
+  },
+  {
+    "category": "account_api",
+    "description": "Account 页面后端接口（Main Account / Sub Account CRUD + 列表查询）",
+    "steps": [
+      "实现 Main Account: 新建、编辑、删除（软删）、分页列表查询接口",
+      "实现 Sub Account: 新建、编辑、删除（软删）、按 main_account_id 列表查询接口",
+      "删除校验：删除 main_account 时检查是否存在未删除的 sub_account 或 crypto_tx",
+      "所有 Controller 方法添加 JavaDoc 注释（功能/入参/返回值）",
+      "为接口提供 Req/Resp（使用 *Req/*Resp 命名规范）"
+    ],
+    "passes": false
+  },
+  {
+    "category": "account_import_excel",
+    "description": "Main Account Excel 导入交易：自动创建 Sub Account，并写入 crypto_tx",
+    "steps": [
+      "实现 Main Account 的 Import File 接口：上传 Excel 文件（multipart）",
+      "生成 import_batch_id（uuid/雪花/文件hash），创建新的 Sub Account（import_type=Excel，account_source=Excel，记录 import_file_name/import_batch_id）",
+      "解析 Excel：将每行映射为 crypto_tx 明细（关联 main_account_id + sub_account_id + import_batch_id + row_no）",
+      "实现去重策略：按 uk_tx_dedupe（sub_account_id + tx_hash + direction + currency + amount + from/to + trade_time + row_no）避免重复导入",
+      "导入结果返回：成功条数、失败条数、失败行号与错误原因列表"
+    ],
+    "passes": false
+  },
+  {
+    "category": "transactions_api",
+    "description": "Crypto/Transactions 页面后端接口（按 tx_hash 聚合列表 + 明细展开）",
+    "steps": [
+      "实现 Tx Group 分页查询接口：按条件筛选后，对 crypto_tx 进行 group by tx_hash 的聚合查询",
+      "聚合字段输出：Category（Send/Receive/混合态）、Direction(From/To)、Account Name、Trade Time、Inflow、Outflow、Fee、Txn Id、Chain Name、Description",
+      "实现 Tx Details 查询接口：根据 tx_hash + sub_account_id（或 main_account_id）返回明细列表",
+      "实现 Description 与 Business Type 的编辑接口（更新 crypto_tx 的对应字段，按 tx_hash 批量或按单条更新按产品约定）",
+      "所有 Controller 方法添加 JavaDoc 注释（功能/入参/返回值）"
+    ],
+    "passes": false
+  },
+  {
+    "category": "assets_reconcile_api",
+    "description": "对账页面后端接口（生成快照 + 查询/导出）",
+    "steps": [
+      "实现生成对账快照接口：输入 main_account_id（可选 sub_account_id、snapshot_time），按 Sub Account + Currency 计算 system_total",
+      "system_total 计算规则：Σ(Receive amount) - Σ(Send amount)（按 direction 净额）",
+      "预留 onchain_balance 获取：先用 mock/固定值实现接口链路（后续可替换为真实链上余额调用）",
+      "写入 asset_reconcile_snapshot：system_total、onchain_balance、diff、diff_abs、diff_status、snapshot_time",
+      "实现对账列表查询接口（分页、按 sub_account/currency/time 筛选）",
+      "实现 Export Assets 导出接口（CSV/Excel）"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui_account_page",
+    "description": "Account 页面 UI：二级表格 + CRUD + Excel 导入 + 跳转 Transactions + 三点菜单",
+    "steps": [
+      "实现左侧菜单与路由：Accounts -> Account 页面",
+      "实现 Account 页面顶部 Filter Form（左侧选列，右侧填值；支持文本/下拉/多选）",
+      "实现 Main Account 一级表格：字段与需求一致（Account Name/Type/Source/Address/Market Value/Status/Organization/Operate）",
+      "实现 Main Account 行操作：Transactions 跳转 Crypto 页面并携带 main_account_id（可选 sub_account_id）",
+      "实现 三点菜单：Delete、Import File、View Assets、Export Assets（无 Resync All）",
+      "实现 Sub Account 二级表格：展开显示子账户列表（Sub Account Name/Category/Source/Import Type/Address/Status/Operate）",
+      "实现 Main/Sub Account 的新增/编辑/删除弹窗与表单校验"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui_transactions_page",
+    "description": "Crypto/Transactions 页面 UI：二级表格（按 tx_hash 汇总 + 明细展开）+ Filter Form",
+    "steps": [
+      "实现左侧菜单与路由：Crypto -> Transactions 页面",
+      "实现 Transactions 页面顶部 Filter Form（左侧选列，右侧填值）",
+      "实现一级表格（Tx Group）列：勾选框、Category（含 Business Type 标签+编辑入口）、Direction(From/To 两行)、Account Name、Trade Time、Inflow、Outflow、Fee、Txn Id（复制/外链）、Chain Name、Description（编辑入口）",
+      "实现二级表格（Tx Details）展开：Category、Balance Change、From、To、更多操作（…）",
+      "实现与后端接口联动：按筛选条件分页查询 Tx Group；展开行请求 Tx Details",
+      "实现 Business Type 与 Description 的编辑并回写刷新"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui_assets_page",
+    "description": "对账页面 UI：展示 Sub Account + Currency 的对账明细，并支持导出",
+    "steps": [
+      "从 Account 页面三点菜单 View Assets 跳转对账页面，并携带 main_account_id",
+      "实现对账页面顶部筛选（可选）：Sub Account、Currency、时间范围",
+      "实现对账列表表格：Sub Account、Currency、Timestamp、System Total、On-chain Balance、Diff",
+      "实现生成对账快照按钮（调用后端生成接口），生成后刷新列表",
+      "实现 Export Assets 导出按钮（调用后端导出接口）"
+    ],
+    "passes": false
+  },
+  {
+    "category": "e2e_smoke",
+    "description": "基础端到端自测：Account->导入->Transactions->对账 页面链路可用",
+    "steps": [
+      "准备一份最小 Excel 样例（包含至少 1 个 tx_hash 下 2 条明细：Send + Receive）",
+      "创建 Main Account，并在 UI 执行 Import File 导入 Excel，验证自动创建 Sub Account 且 crypto_tx 有数据",
+      "进入 Crypto 页面，验证 Tx Group 聚合展示正确，展开明细展示正确",
+      "从 Account 进入 View Assets，对账页面能生成并展示快照数据",
+      "确保前后端无明显报错，核心流程可重复执行"
+    ],
+    "passes": false
+  }
+]
