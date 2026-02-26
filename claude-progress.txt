@@ -11,44 +11,97 @@
 - CORS 配置允许前端 localhost:5173 访问
 - 统一 API 响应格式 Result<T> (code, message, data)
 - init.sh 启动脚本
-- 前后端均验证可正常启动和构建
 
-## 待完成的功能
-- db_schema: 数据库表结构创建
-- backend_models: 后端领域模型与 MyBatis-Flex CRUD
-- account_api: Account 页面后端接口
-- account_import_excel: Excel 导入交易
-- transactions_api: Transactions 后端接口
-- assets_reconcile_api: 对账后端接口
-- ui_design_system: Apple 风格 Dark UI 设计系统
-- ui_account_page: Account 页面 UI
-- ui_transactions_page: Transactions 页面 UI
-- ui_assets_page: 对账页面 UI
-- e2e_smoke: 端到端自测
+### 2. db_schema (2026-02-26)
+- Flyway V2~V5 迁移脚本：main_account, sub_account, crypto_tx, asset_reconcile_snapshot
+- 所有表含 is_deleted 软删、created_at/updated_at 时间戳
+- crypto_tx 去重唯一索引 uk_tx_dedupe（9 列）
+- asset_reconcile_snapshot 唯一约束（sub_account_id + currency + snapshot_time）
+
+### 3. backend_models (2026-02-26)
+- 4 张表的 Entity（Lombok）+ Mapper（MyBatis-Flex BaseMapper）
+- MainAccountService / SubAccountService：CRUD + 软删 + 分页
+- CryptoTxService：多条件分页、按 tx_hash 查明细、批量插入、聚合分页、批量更新
+- AssetReconcileSnapshotService：保存/批量保存、分页查询、导出查询
+
+### 4. account_api (2026-02-26)
+- MainAccountController：POST/PUT/DELETE/GET/分页 + Excel 导入接口
+- SubAccountController：POST/PUT/DELETE/GET/按主账户查询/分页
+- 删除校验：删除主账户前检查子账户和交易记录
+- 完整 Req/Resp DTO 和 JavaDoc
+
+### 5. account_import_excel (2026-02-26)
+- ExcelImportService：解析 .xlsx、自动创建 Sub Account、批量写入 crypto_tx
+- 表头别名匹配（支持多种列名格式）
+- UUID import_batch_id 生成
+- 逐条插入处理 uk_tx_dedupe 去重
+- ImportResultResp 返回成功/失败条数和失败详情
+
+### 6. transactions_api (2026-02-26)
+- CryptoTxController：Tx Group 分页聚合（GROUP BY tx_hash）+ Tx Details 明细
+- 聚合输出：Category（Send/Receive/Mixed）、From/To、Account Name、Inflow/Outflow/Fee
+- Description 和 Business Type 按 tx_hash 批量编辑接口
+
+### 7. assets_reconcile_api (2026-02-26)
+- AssetReconcileController：生成快照 + 列表查询 + Excel 导出
+- system_total = Σ(Receive) - Σ(Send)，onchain_balance 使用 mock 值
+- diff/diff_abs/diff_status 自动计算
+
+### 8. ui_design_system (2026-02-26)
+- Tailwind 扩展 Apple Dark 主题色（apple-bg/separator/accent/green/red 等）
+- 全局样式：自定义 scrollbar、apple-table 组件类
+- 组件库：AppButton(4 variant) / AppInput / AppSelect / AppModal / AppToast / AppDropdown / AppTag(6 color)
+- 系统字体 SF Pro + 抗锯齿渲染
+
+### 9. ui_account_page (2026-02-26)
+- Main Account 表格：展开/折叠 Sub Account 二级表格
+- CRUD 弹窗：新建/编辑 Main Account + 编辑 Sub Account
+- 三点菜单：Delete / Import File / View Assets / Export Assets
+- Excel 导入弹窗 + 导入结果展示
+- Transactions 跳转（携带 mainAccountId）
+
+### 10. ui_transactions_page (2026-02-26)
+- Tx Group 聚合表格 + Filter Bar（txHash/direction/category/chain/time）
+- Category Tag（Send/Receive/Mixed 颜色区分）
+- Tx Details 二级展开
+- Description / Business Type 编辑弹窗
+- Txn ID 复制功能
+
+### 11. ui_assets_page (2026-02-26)
+- 对账列表表格：Sub Account / Currency / System Total / On-chain Balance / Diff / Status
+- Generate Snapshot 按钮 + Export Excel 按钮
+- Currency / Time 筛选
+- 从 Account 页面三点菜单 View Assets 跳转
+
+### 12. e2e_smoke (2026-02-26)
+- 全流程验证通过：创建账户 -> 导入 Excel -> Tx Group 聚合 -> Tx Details -> 生成对账快照 -> 查询/导出
+- 前后端 11 项测试全部 PASS
+
+## 所有功能已完成
 
 ## 数据库连接信息
 - Host: 54.179.133.95:5432
 - Database: fintax_db
 - User: fintax_user
 
-## 项目结构
-```
-fintax-ai/
-├── backend/          # Spring Boot 后端 (port 8080)
-│   ├── pom.xml
-│   └── src/main/java/com/fintax/
-│       ├── FintaxApplication.java
-│       ├── common/Result.java
-│       ├── config/WebConfig.java
-│       └── controller/HealthController.java
-├── frontend/         # Vue 3 前端 (port 5173)
-│   ├── package.json
-│   └── src/
-│       ├── layouts/MainLayout.vue
-│       ├── views/AccountPage.vue
-│       ├── views/TransactionsPage.vue
-│       └── router/index.ts
-├── init.sh           # 启动脚本
-├── feature_list.json # 功能列表
-└── claude-progress.txt # 进度文件
-```
+## 后端 API 列表
+- GET /api/health - 健康检查
+- POST /api/main-accounts - 创建主账户
+- PUT /api/main-accounts/{id} - 编辑主账户
+- DELETE /api/main-accounts/{id} - 删除主账户（软删）
+- GET /api/main-accounts/{id} - 查询主账户
+- GET /api/main-accounts - 分页列表
+- POST /api/main-accounts/{id}/import - Excel 导入交易
+- POST /api/sub-accounts - 创建子账户
+- PUT /api/sub-accounts/{id} - 编辑子账户
+- DELETE /api/sub-accounts/{id} - 删除子账户
+- GET /api/sub-accounts/{id} - 查询子账户
+- GET /api/sub-accounts/by-main-account/{mainAccountId} - 按主账户查子账户
+- GET /api/sub-accounts - 分页列表
+- GET /api/crypto-tx/groups - Tx Group 聚合分页
+- GET /api/crypto-tx/details - Tx Details 明细
+- PUT /api/crypto-tx/description - 编辑 Description
+- PUT /api/crypto-tx/business-type - 编辑 Business Type
+- POST /api/reconcile/generate - 生成对账快照
+- GET /api/reconcile/list - 对账列表
+- GET /api/reconcile/export - 导出对账 Excel

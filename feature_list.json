@@ -20,7 +20,7 @@
       "新增 DB migration 脚本，创建 asset_reconcile_snapshot 表（含字段、默认值、唯一约束、查询索引）",
       "启动应用并验证 migration 成功执行"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "backend_models",
@@ -32,7 +32,7 @@
       "为 crypto_tx 提供基础查询方法（按条件分页、按 tx_hash 聚合查询、按 tx_hash 查明细）",
       "为 asset_reconcile_snapshot 提供分页查询与导出查询方法"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "account_api",
@@ -44,7 +44,7 @@
       "所有 Controller 方法添加 JavaDoc 注释（功能/入参/返回值）",
       "为接口提供 Req/Resp（使用 *Req/*Resp 命名规范）"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "account_import_excel",
@@ -56,7 +56,7 @@
       "实现去重策略：按 uk_tx_dedupe（sub_account_id + tx_hash + direction + currency + amount + from/to + trade_time + row_no）避免重复导入",
       "导入结果返回：成功条数、失败条数、失败行号与错误原因列表"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "transactions_api",
@@ -68,7 +68,7 @@
       "实现 Description 与 Business Type 的编辑接口（更新 crypto_tx 的对应字段，按 tx_hash 批量或按单条更新按产品约定）",
       "所有 Controller 方法添加 JavaDoc 注释（功能/入参/返回值）"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "assets_reconcile_api",
@@ -81,7 +81,7 @@
       "实现对账列表查询接口（分页、按 sub_account/currency/time 筛选）",
       "实现 Export Assets 导出接口（CSV/Excel）"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "ui_design_system",
@@ -95,7 +95,7 @@
       "为表格实现 Apple 风格：行 hover、选中态、sticky header、柔和分隔线、紧凑但不拥挤的间距",
       "确保 Account/Transactions/Assets 三个页面使用同一套设计系统与组件"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "ui_account_page",
@@ -109,7 +109,7 @@
       "实现 Sub Account 二级表格：展开显示子账户列表（Sub Account Name/Category/Source/Import Type/Address/Status/Operate）",
       "实现 Main/Sub Account 的新增/编辑/删除弹窗与表单校验（Apple Dark 风格弹窗与表单）"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "ui_transactions_page",
@@ -122,7 +122,7 @@
       "实现与后端接口联动：按筛选条件分页查询 Tx Group；展开行请求 Tx Details",
       "实现 Business Type 与 Description 的编辑并回写刷新（Apple Dark 风格 inline edit / modal）"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "ui_assets_page",
@@ -134,7 +134,7 @@
       "实现生成对账快照按钮（调用后端生成接口），生成后刷新列表",
       "实现 Export Assets 导出按钮（调用后端导出接口）"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "e2e_smoke",
@@ -146,6 +146,6 @@
       "从 Account 进入 View Assets，对账页面能生成并展示快照数据",
       "确保前后端无明显报错，核心流程可重复执行"
     ],
-    "passes": false
+    "passes": true
   }
 ]
