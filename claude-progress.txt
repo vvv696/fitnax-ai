@@ -1,0 +1,54 @@
+# Fintax AI - 项目进度
+
+## 已完成的功能
+
+### 1. project_bootstrap (2026-02-26)
+- 创建后端工程：Java 21 + Spring Boot 3.2.5 + MyBatis-Flex + PostgreSQL + Flyway + Lombok + Fastjson2
+- 创建前端工程：Vue 3 + TypeScript + Vite + Tailwind CSS + Vue Router
+- 实现左侧菜单布局：Accounts -> Account, Crypto -> Transactions
+- Apple Dark 风格基础 UI（暗色侧边栏、内容区域）
+- 后端健康检查接口 GET /api/health
+- CORS 配置允许前端 localhost:5173 访问
+- 统一 API 响应格式 Result<T> (code, message, data)
+- init.sh 启动脚本
+- 前后端均验证可正常启动和构建
+
+## 待完成的功能
+- db_schema: 数据库表结构创建
+- backend_models: 后端领域模型与 MyBatis-Flex CRUD
+- account_api: Account 页面后端接口
+- account_import_excel: Excel 导入交易
+- transactions_api: Transactions 后端接口
+- assets_reconcile_api: 对账后端接口
+- ui_design_system: Apple 风格 Dark UI 设计系统
+- ui_account_page: Account 页面 UI
+- ui_transactions_page: Transactions 页面 UI
+- ui_assets_page: 对账页面 UI
+- e2e_smoke: 端到端自测
+
+## 数据库连接信息
+- Host: 54.179.133.95:5432
+- Database: fintax_db
+- User: fintax_user
+
+## 项目结构
+```
+fintax-ai/
+├── backend/          # Spring Boot 后端 (port 8080)
+│   ├── pom.xml
+│   └── src/main/java/com/fintax/
+│       ├── FintaxApplication.java
+│       ├── common/Result.java
+│       ├── config/WebConfig.java
+│       └── controller/HealthController.java
+├── frontend/         # Vue 3 前端 (port 5173)
+│   ├── package.json
+│   └── src/
+│       ├── layouts/MainLayout.vue
+│       ├── views/AccountPage.vue
+│       ├── views/TransactionsPage.vue
+│       └── router/index.ts
+├── init.sh           # 启动脚本
+├── feature_list.json # 功能列表
+└── claude-progress.txt # 进度文件
+```

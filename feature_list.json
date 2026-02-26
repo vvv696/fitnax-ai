@@ -8,7 +8,7 @@
       "实现左侧菜单布局：Accounts -> Account、Crypto",
       "提供本地启动说明（README 或 init.sh），确保前后端能启动并访问基础页面路由"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "db_schema",
@@ -84,39 +84,53 @@
     "passes": false
   },
   {
-    "category": "ui_account_page",
-    "description": "Account 页面 UI：二级表格 + CRUD + Excel 导入 + 跳转 Transactions + 三点菜单",
+    "category": "ui_design_system",
+    "description": "前端 Apple 风格 Dark UI 设计系统（全站一致的暗黑质感、圆角、玻璃拟态与细腻分割线）",
     "steps": [
-      "实现左侧菜单与路由：Accounts -> Account 页面",
-      "实现 Account 页面顶部 Filter Form（左侧选列，右侧填值；支持文本/下拉/多选）",
+      "启用全局 Dark Mode（Tailwind dark class），提供主题切换能力（默认 dark）",
+      "设计 Apple 风格基础样式：背景层级（app background / card background）、细线分割、圆角、阴影、blur（glass effect）",
+      "统一 Typography：标题/正文/辅助文字层级与间距（Apple-like spacing）",
+      "统一组件：按钮（primary/secondary/ghost）、输入框、下拉、Tag、表格、弹窗、Toast",
+      "提供页面布局容器：左侧 Sidebar + 顶部区域 + 内容区 Card 化",
+      "为表格实现 Apple 风格：行 hover、选中态、sticky header、柔和分隔线、紧凑但不拥挤的间距",
+      "确保 Account/Transactions/Assets 三个页面使用同一套设计系统与组件"
+    ],
+    "passes": false
+  },
+  {
+    "category": "ui_account_page",
+    "description": "Account 页面 UI：二级表格 + CRUD + Excel 导入 + 跳转 Transactions + 三点菜单（Apple Dark 风格）",
+    "steps": [
+      "实现左侧菜单与路由：Accounts -> Account 页面（Apple Dark 风格布局）",
+      "实现 Account 页面顶部 Filter Form（左侧选列，右侧填值；支持文本/下拉/多选；Apple Dark 风格）",
       "实现 Main Account 一级表格：字段与需求一致（Account Name/Type/Source/Address/Market Value/Status/Organization/Operate）",
       "实现 Main Account 行操作：Transactions 跳转 Crypto 页面并携带 main_account_id（可选 sub_account_id）",
       "实现 三点菜单：Delete、Import File、View Assets、Export Assets（无 Resync All）",
       "实现 Sub Account 二级表格：展开显示子账户列表（Sub Account Name/Category/Source/Import Type/Address/Status/Operate）",
-      "实现 Main/Sub Account 的新增/编辑/删除弹窗与表单校验"
+      "实现 Main/Sub Account 的新增/编辑/删除弹窗与表单校验（Apple Dark 风格弹窗与表单）"
     ],
     "passes": false
   },
   {
     "category": "ui_transactions_page",
-    "description": "Crypto/Transactions 页面 UI：二级表格（按 tx_hash 汇总 + 明细展开）+ Filter Form",
+    "description": "Crypto/Transactions 页面 UI：二级表格（按 tx_hash 汇总 + 明细展开）+ Filter Form（Apple Dark 风格）",
     "steps": [
-      "实现左侧菜单与路由：Crypto -> Transactions 页面",
-      "实现 Transactions 页面顶部 Filter Form（左侧选列，右侧填值）",
+      "实现左侧菜单与路由：Crypto -> Transactions 页面（Apple Dark 风格布局）",
+      "实现 Transactions 页面顶部 Filter Form（左侧选列，右侧填值；Apple Dark 风格）",
       "实现一级表格（Tx Group）列：勾选框、Category（含 Business Type 标签+编辑入口）、Direction(From/To 两行)、Account Name、Trade Time、Inflow、Outflow、Fee、Txn Id（复制/外链）、Chain Name、Description（编辑入口）",
       "实现二级表格（Tx Details）展开：Category、Balance Change、From、To、更多操作（…）",
       "实现与后端接口联动：按筛选条件分页查询 Tx Group；展开行请求 Tx Details",
-      "实现 Business Type 与 Description 的编辑并回写刷新"
+      "实现 Business Type 与 Description 的编辑并回写刷新（Apple Dark 风格 inline edit / modal）"
     ],
     "passes": false
   },
   {
     "category": "ui_assets_page",
-    "description": "对账页面 UI：展示 Sub Account + Currency 的对账明细，并支持导出",
+    "description": "对账页面 UI：展示 Sub Account + Currency 的对账明细，并支持导出（Apple Dark 风格）",
     "steps": [
       "从 Account 页面三点菜单 View Assets 跳转对账页面，并携带 main_account_id",
-      "实现对账页面顶部筛选（可选）：Sub Account、Currency、时间范围",
-      "实现对账列表表格：Sub Account、Currency、Timestamp、System Total、On-chain Balance、Diff",
+      "实现对账页面顶部筛选（可选）：Sub Account、Currency、时间范围（Apple Dark 风格）",
+      "实现对账列表表格：Sub Account、Currency、Timestamp、System Total、On-chain Balance、Diff（Apple Dark 风格）",
       "实现生成对账快照按钮（调用后端生成接口），生成后刷新列表",
       "实现 Export Assets 导出按钮（调用后端导出接口）"
     ],
